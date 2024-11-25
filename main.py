@@ -1,4 +1,4 @@
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler
 import os
 import json
 import asyncio
@@ -35,7 +35,7 @@ async def start(message):
     user_language_code = str(message.from_user.language_code)
     is_premium = message.from_user.is_premium
     text = message.text.split()
-
+    
     welcome_message = (
         f"Hi, {user_first_name}!👋\n\n"
         f"Welcome to Orblix!\n\n"
@@ -47,7 +47,7 @@ async def start(message):
     try:
         user_ref = db.collection('users').document(user_id)
         user_doc = user_ref.get()
-
+        
         if not user_doc.exists:
             photos = await bot.get_user_profile_photos(user_id, limit=1)
             if photos.total_count > 0:
@@ -123,16 +123,16 @@ async def start(message):
                 user_data['referredBy'] = None
             
             user_ref.set(user_data)
-
+        
         keyboard = generate_start_keyboard()
         await bot.reply_to(message, welcome_message, reply_markup=keyboard)
 
     except Exception as e:
         error_message = "Error. Please try again!"
         await bot.reply_to(message, error_message)
-        print(f"Error: {str(e)}")  # Log the error
+        print(f"Error: {str(e)}")
 
-class handler(BaseHTTPRequestHandler):
+class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         content_length = int(self.headers['Content-Length'])
         post_data = self.rfile.read(content_length)
@@ -152,9 +152,14 @@ class handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(b"Bot is running")
 
-# Entry point for running the server
+# ASGI application instance
+async def app(scope, receive, send):
+    handler = Handler()
+    if scope['type'] == 'http':
+        await handler.handle(scope, receive, send)
+    else:
+        raise NotImplementedError("Only HTTP scope is supported.")
+
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))
-    httpd = HTTPServer(('0.0.0.0', port), handler)
-    print(f"Starting server on port {port}")
-    httpd.serve_forever()
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
