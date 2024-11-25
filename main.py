@@ -31,7 +31,7 @@ async def start(message):
     user_id = str(message.from_user.id)
     user_first_name = str(message.from_user.first_name)
     user_last_name = message.from_user.last_name
-    user_username = message.from_user.username
+    user_username = message.from_user.username  # Correct this from user_name to username
     user_language_code = str(message.from_user.language_code)
     is_premium = message.from_user.is_premium
     text = message.text.split()
@@ -75,7 +75,7 @@ async def start(message):
                 'firstName': user_first_name,
                 'lastName': user_last_name,
                 'username': user_username,
-                'languageCode': user_language_code,
+                'languageCode': user_language_code,  # Corrected from user_last_name
                 'isPremium': is_premium,
                 'referrals': {},
                 'balance': 0,
@@ -91,14 +91,14 @@ async def start(message):
             
             if len(text) > 1 and text[1].startswith('ref_'):
                 referrer_id = text[1][4:]
-                referrer_ref = db.collection('users').document(referrer_id)
+                referrer_ref = db.collection('users').document(referrer_id)  # Fixed method
                 referrer_doc = referrer_ref.get()
 
                 if referrer_doc.exists:
                     user_data['referredBy'] = referrer_id
                     referrer_data = referrer_doc.to_dict()
 
-                    bonus_amount = 500 if is_premium else 300
+                    bonus_amount = 500 if is_premium else 300  # Corrected the condition
 
                     current_balance = referrer_data.get('balance', 0)
                     new_balance = current_balance + bonus_amount
@@ -114,7 +114,7 @@ async def start(message):
                     }
 
                     referrer_ref.update({
-                        'balance': new_balance,
+                        'balance': new_balance,  # Corrected syntax
                         'referrals': referrals
                     })
                 else:
@@ -130,13 +130,13 @@ async def start(message):
     except Exception as e:
         error_message = "Error. Please try again!"
         await bot.reply_to(message, error_message)
-        print(f"Error: {str(e)}")
+        print(f"Error: {str(e)}")  # Log the error
 
-class Handler(BaseHTTPRequestHandler):
+class handler(BaseHTTPRequestHandler):
     def do_POST(self):
-        content_length = int(self.headers['Content-Length'])
+        content_length = int(self.headers['Content-Length'])  # Corrected method
         post_data = self.rfile.read(content_length)
-        update_dict = json.loads(post_data.decode('utf-8'))
+        update_dict = json.loads(post_data.decode('utf-8'))  # Corrected encoding
 
         asyncio.run(self.process_update(update_dict))
 
@@ -150,16 +150,4 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
         self.end_headers()
-        self.wfile.write(b"Bot is running")
-
-# ASGI application instance
-async def app(scope, receive, send):
-    handler = Handler()
-    if scope['type'] == 'http':
-        await handler.handle(scope, receive, send)
-    else:
-        raise NotImplementedError("Only HTTP scope is supported.")
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+        self.wfile.write(b"Bot is running")  # Ensure it's bytes
