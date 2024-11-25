@@ -1,14 +1,17 @@
 import os
 import json
-import asyncio
 import requests
 import datetime
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from fastapi import FastAPI, Request, HTTPException
+from fastapi.responses import JSONResponse
 from telebot.async_telebot import AsyncTeleBot
 import firebase_admin
 from firebase_admin import credentials, firestore, storage
 from telebot import types
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
+
+# Initialize FastAPI app
+app = FastAPI()
 
 # Initialize the bot
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
@@ -37,7 +40,7 @@ async def start(message):
     user_language_code = str(message.from_user.language_code)
     is_premium = message.from_user.is_premium
     text = message.text.split()
-    
+
     welcome_message = (
         f"Hi, {user_first_name}!👋\n\n"
         f"Welcome to Orblix!\n\n"
@@ -131,31 +134,18 @@ async def start(message):
         await bot.reply_to(message, error_message)
         print(f"Error: {str(e)}")
 
-class WebhookHandler(BaseHTTPRequestHandler):
-    def do_POST(self):
-        content_length = int(self.headers['Content-Length'])
-        post_data = self.rfile.read(content_length)
-        update_dict = json.loads(post_data.decode('utf-8'))
-
-        asyncio.run(self.process_update(update_dict))
-
-        self.send_response(200)
-        self.end_headers()
-
-    async def process_update(self, update_dict):
+# FastAPI route for handling updates from Telegram
+@app.post("/webhook")
+async def process_webhook(request: Request):
+    try:
+        update_dict = await request.json()
         update = types.Update.de_json(update_dict)
         await bot.process_new_updates([update])
+        return JSONResponse(content={"status": "ok"})
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
-    def do_GET(self):
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write(b"Bot is running")
-
-def run(server_class=HTTPServer, handler_class=WebhookHandler, port=8000):
-    server_address = ('', port)
-    httpd = server_class(server_address, handler_class)
-    print(f'Starting httpd on port {port}...')
-    httpd.serve_forever()
-
-if __name__ == "__main__":
-    run()
+# FastAPI route for health check
+@app.get("/")
+async def health_check():
+    return {"status": "Bot is running"}
