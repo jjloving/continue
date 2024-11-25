@@ -1,12 +1,13 @@
+version: 1
 services:
   - type: web
-    name: orblix-telegram-bot2
+    name: my-telegram-bot
     env: python
     buildCommand: "pip install -r requirements.txt"
     startCommand: "uvicorn main:app --host 0.0.0.0 --port 10000"
     envVars:
       - key: BOT_TOKEN
-        value: "8113117364:AAEBZZZQrXK2RfmvrKcNfntkvIsgnt-OrTw"  # Your Bot Token
+        fromSecret: BOT_TOKEN  # Assuming you've set this in Render's dashboard
       - key: FIREBASE_SERVICE_ACCOUNT
-        value: |
-          {"type": "service_account","project_id": "orblix-15f00","private_key_id": "bea8674faeeaf44749c4e5dfc69d10847ad72d31","private_key": "-----BEGIN PRIVATE KEY-----\\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDyrIZIyPG7DFP+\\n7b1RTHnvfk3/0Ne9tyf578kawOJ+SJ6cMOYuqEZBebsu/6xQ4TBxwdRV/MPOvRp6\\nm3JBzfKHLKr9E9yzCKyp0x61EEq6+m+W0M9MlUch/jqOzWWTAIs6f8JREUvX1B4s\\neFW+gSgC/0Wkkr9+bi8EhVG/2nTWbqgNMrW75KeEDmktRnMaVpKc4tnqhVHZZROD\\nkdgztyO4hevcdPy1AwNob8MCPiGU+Ao5FQNMzrKzAwp1kRSfB0TJOzRmCKWovUDQ\\n/D5mcuWX5phqHzU7ZN+qGU8CRz0DQym4GJtotcBD6tp279tpIGvr5WBvKJHcSZ51\\npsf8Og6nAgMBAAECggEAC4V8ZKVBsM8/h6ly5RK78U5uVphsPcId4ERtqFsDBdrd\\nyO2baBiuKTql0+/olvhyC9yXf7Od+klJIgwSSySDgL5yqcxRHKDrTa7L1O3elm0A\\nckkcpnap52fCEPiYe3e5pH/fUmj/UFJuUk8uRvqr0ySagltDQzXo/o5z2Kd/B5Um\\nss9Btna416lXFSWDmQ8bKhBfk0rWuA+UtESfkPBhsu72ZZt++ACNsEFcOVaxmXly\\nlpv26qPhIpGHXulbj9gSAIr+4abZuhOmMkrhrzDWSvJ2Om1jRIK5sN1ZnLYGiy72\\ns3KBzhgClEuI+LAPfvGs/RFBXzmZPFTYJMfUsQ0zCQKBgQD9H7OzX99I5vuxCc/h\\nfr+SoM5osZKkZOvtW6BbJvvYgF6KAURyV7vQvbOZ5w3uxK0bkQyA0PEAn4phTt88\\nFixMN207OGLPHsrgHJVNQMmTG/AQyW4irsQ2M5Tm+GbnFXrTSRB0judXD+RIBAh0\\nEm5sJ074tEUMVBxqPtF6mSyEbwKBgQD1bmzoIvfkcbLuPFfxNLAI0Le01tdxhoyV\\n23uE5uOjeZc1YW5ILIcxSLMnMo+vKLwjWV+jI3pTTI6Xlxr0c1RXAy4o2ESZNWC6\\nTrQJNOv3dtdKtj0BxgPpIwEYwtx9KDKQkZIGTXWppBNNhlwDlE40XPEJXJqBYf6D\\nw6ZTR3/lSQKBgQCmNtoO0MbTnXHrSDEstslfpJ7F2s0bjHXsMD21fXzlJy5tWvWy\\nS/A120wDpNjeUGIH9xCJyipnqVv6GAu47ip6he8Bcz5XGbZIwhw8VW3IXxEeRNdA\\niRipKuf9X2JbHhzAf3sBvxEkd3gE3jka1zuRY6KU5/NrbBQYpFV0Nv8nmwKBgD/m\\nUzaRPCdfLu32ChOD2z1AUkQkF424MUwnC97LWoNKegLs7hCef0hmnDZdZKl/GpS9\\nhTftWcDsUsfHEL6KdG//JPp/bETTb+6x5Q/slm8kouMR1YprqsL9WSDAQzXWzGt1\\nayZ27maPkHMDw1svNrlNZXhBgvyirehSfTB7kiH5AoGBAPoQ45r8A9Kzk2CBk8hu\\nLYp9BKJd8CS2AFlXnyVtuNtqBHwrLFGGdmDsB+ojABeqcTw48BpmBPHcoOL+naCs\\nu5TCrY+3lp0caQWuLV1agYr4BrcRrSS3MWNSHfxb8oSLAJOe4XYdS2ScmqYksL3c\\n2NktC0qPOu4LoaqrpUWZbZfk\\n-----END PRIVATE KEY-----\\n"}
+        fromSecret: FIREBASE_SERVICE_ACCOUNT  # Assuming you've set this in Render's dashboard
+    plan: free
